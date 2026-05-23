@@ -126,7 +126,6 @@ const PIN_FRAG = /* glsl */ `
 export function GlobeMap({ missionaries }: GlobeMapProps) {
   const globeGroupRef = useRef<THREE.Group>(null);
   const globeMatRef = useRef<THREE.ShaderMaterial>(null);
-  const pinMatRef = useRef<THREE.ShaderMaterial>(null);
   const sceneRef = useScene();
 
   const globeGeo = useMemo(() => new THREE.IcosahedronGeometry(GLOBE_RADIUS, 5), []);
@@ -153,7 +152,9 @@ export function GlobeMap({ missionaries }: GlobeMapProps) {
     []
   );
 
-  const { instancedMesh, seeds } = useMemo(() => {
+  // Build instanced pin mesh once per missionary set. Material is kept on the
+  // mesh itself; we read uniforms off it in useFrame (no separate ref needed).
+  const instancedMesh = useMemo(() => {
     const count = missionaries.length;
     const seeds = new Float32Array(count);
     const dummy = new THREE.Object3D();
@@ -186,16 +187,8 @@ export function GlobeMap({ missionaries }: GlobeMapProps) {
     im.instanceMatrix.needsUpdate = true;
     im.geometry.setAttribute('aSeed', new THREE.InstancedBufferAttribute(seeds, 1));
 
-    return { instancedMesh: im, seeds };
+    return im;
   }, [missionaries, pinGeo, pinUniforms]);
-
-  // Pin mat ref — we set it via the instancedMesh's material
-  // (the ref above lets the per-frame update poke uOpacity uniformly)
-  useMemo(() => {
-    const mat = instancedMesh.material as THREE.ShaderMaterial;
-    pinMatRef.current = mat;
-    return null;
-  }, [instancedMesh]);
 
   useFrame((state) => {
     const p = sceneRef.current.progress;
@@ -206,9 +199,11 @@ export function GlobeMap({ missionaries }: GlobeMapProps) {
     if (globeMatRef.current) {
       globeMatRef.current.uniforms.uOpacity.value = opacity;
     }
-    if (pinMatRef.current) {
-      pinMatRef.current.uniforms.uOpacity.value = opacity;
-      pinMatRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+    // Read pin material directly off the instanced mesh — no separate ref needed
+    const pinMat = instancedMesh.material as THREE.ShaderMaterial;
+    if (pinMat?.uniforms) {
+      pinMat.uniforms.uOpacity.value = opacity;
+      pinMat.uniforms.uTime.value = state.clock.elapsedTime;
     }
     if (globeGroupRef.current) {
       // Slow continuous rotation — 1 full turn per ROTATION_SECONDS
