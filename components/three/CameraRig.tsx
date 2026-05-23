@@ -21,7 +21,17 @@ import { useScene } from '@/components/three/SceneController';
 
 // Camera keyframes per scene boundary.
 // Each entry: { progress, position [x,y,z], lookAt [x,y,z] }
-const KEYFRAMES = [
+//
+// NOTE: explicitly typed (no `as const`) so iteration produces a uniform
+// element type — otherwise each tuple's literal types diverge and the
+// interpKeyframes loop can't assign one entry's slot from another's.
+interface Keyframe {
+  p: number;
+  pos: [number, number, number];
+  look: [number, number, number];
+}
+
+const KEYFRAMES: Keyframe[] = [
   // Scene 1 — Threshold: looking straight at the closed Bible from slightly above
   { p: 0.0, pos: [0, 1.6, 5.0], look: [0, 0.2, 0] },
   // Scene 2 — Welcome: dolly forward + slight tilt as cover opens
@@ -36,7 +46,7 @@ const KEYFRAMES = [
   { p: 0.74, pos: [0, 3.2, 5.5], look: [0, 0.8, 0] },
   // Scene 7 — Invitation: returns to Scene 1 framing
   { p: 1.0, pos: [0, 1.6, 5.0], look: [0, 0.2, 0] },
-] as const;
+];
 
 // Lerp between adjacent keyframes based on progress
 function interpKeyframes(p: number, out: { pos: THREE.Vector3; look: THREE.Vector3 }) {

@@ -6,6 +6,7 @@
  * displayed at editorial scale alongside an expanded paragraph for each.
  */
 import { Footer } from '@/components/layout/Footer';
+import type { ComponentType } from 'react';
 import {
   TeachTheWordIcon,
   CareForEachOtherIcon,
@@ -13,7 +14,16 @@ import {
   ShareTheGospelIcon,
 } from '@/components/ui/CoreValueIcon';
 
-const VALUES = [
+interface CoreValue {
+  label: string;
+  Icon: ComponentType<{ className?: string; strokeWidth?: number }>;
+  body: string;
+}
+
+// Explicitly typed (not `as const`) — keeps the JSX <v.Icon /> call site happy
+// in strict mode, since TS needs a single component signature, not a union of
+// literal types.
+const VALUES: CoreValue[] = [
   {
     label: 'Teach the Word',
     Icon: TeachTheWordIcon,
@@ -34,7 +44,7 @@ const VALUES = [
     Icon: ShareTheGospelIcon,
     body: 'Twenty-three families serve as missionaries on four continents, supported month after month by the GBC missions budget and prayed for by name in the Sunday bulletin. But the Great Commission isn’t outsourced. It’s the parents in the pickup line, the neighbors on the next street, the co-worker who only knows you well enough to ask why you go to church. You don’t have to leave Dayton to be part of this.',
   },
-] as const;
+];
 
 export const metadata = {
   title: 'Core values',

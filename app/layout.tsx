@@ -28,11 +28,16 @@ import { CustomCursor } from '@/components/ui/CustomCursor';
 import { CHURCH_INFO } from '@/lib/utils';
 
 // Display: Newsreader — editorial gravitas, optical-size variable
+// adjustFontFallback: false silences "Failed to find font override values for
+// font `Newsreader`" — Next's metric database doesn't carry Newsreader, but
+// the swap fallback (Georgia/Times) is close enough in metrics that CLS is
+// negligible, and we set our own SSR-safe fallback in styles/tokens.css.
 const fontDisplay = Newsreader({
   subsets: ['latin'],
   variable: '--font-display',
   weight: ['300', '400', '500'],
   display: 'swap',
+  adjustFontFallback: false,
 });
 
 // Body: Inter Tight — flagged for Phase 5 review (Inter blacklist adjacency)
