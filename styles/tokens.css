@@ -1,0 +1,61 @@
+/*
+ * Grace Bible Church v2 — Design Tokens
+ *
+ * Strict 2-color + 1-accent discipline per Pillar 2 of the system doc.
+ * Bone = warm cream surface. Ink = deep warm-black, slightly warmer than pure black.
+ * Gilt = stained-glass amber/gold; the ONE high-energy color; used for scripture,
+ * primary CTAs, interactive states. Never decorative.
+ *
+ * Tonal variants (ink-soft / bone-warm / gilt-deep) exist for layered surfaces
+ * (e.g., a card sitting on a bone background needs slight tonal contrast).
+ * They are NOT a fourth or fifth brand color.
+ */
+
+:root {
+  /* Brand color lock */
+  --bone: #F4ECDC;
+  --ink: #1A1410;
+  --gilt: #C8964A;
+
+  /* Tonal variants — layered surfaces only */
+  --bone-warm: #ECE0CB;     /* slightly deeper warm cream for cards on bone */
+  --ink-soft: #2A211C;      /* slightly lighter warm-black for cards on ink */
+  --gilt-deep: #9C6E2E;     /* deeper gold for hover/active states on gilt */
+
+  /* Functional surfaces — derived, not new colors */
+  --surface-page: var(--bone);
+  --surface-page-dark: var(--ink);
+  --text-primary: var(--ink);
+  --text-primary-on-dark: var(--bone);
+  --text-muted: rgb(26 20 16 / 0.65);
+  --text-muted-on-dark: rgb(244 236 220 / 0.65);
+  --border-subtle: rgb(26 20 16 / 0.08);
+  --border-subtle-on-dark: rgb(244 236 220 / 0.12);
+  --accent: var(--gilt);
+  --accent-deep: var(--gilt-deep);
+
+  /* Type scale lives in tailwind.config.ts; CSS vars only carry font-family bindings */
+  /* Bindings are set by next/font in app/layout.tsx — these are SSR-safe fallbacks */
+  --font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-scripture: 'Cormorant Garamond', 'Georgia', serif;
+
+  /* Spatial system */
+  --page-max: 84rem;
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --section-gap: 40vh;            /* macro whitespace between scenes — Pillar 4 */
+  --section-gap-tight: 24vh;
+
+  /* Motion system — never use ease-in-out default */
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-gilt: cubic-bezier(0.45, 0, 0.15, 1);
+  --ease-page-turn: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Z-layers — claim them explicitly so nothing gets lost behind the Canvas */
+  --z-canvas: 0;
+  --z-content: 10;
+  --z-nav: 50;
+  --z-mute-toggle: 60;
+  --z-loader: 100;
+  --z-error-catcher: 9999;
+}

@@ -1,0 +1,130 @@
+@import url("../styles/tokens.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: light;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Lenis sets scroll behavior; html stays neutral */
+    scroll-behavior: auto;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--surface-page);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-feature-settings: 'ss01', 'cv01';
+    overflow-x: hidden;
+  }
+
+  /* Prevent flash-of-bone-on-dark-scenes: scene-level <section> sets its own ground */
+  ::selection {
+    background-color: var(--gilt);
+    color: var(--ink);
+  }
+
+  /* Lenis: required for smooth scroll lock */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
+
+  /* Reduced motion: disable Lenis smooth scroll, disable all animation */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Subtle grain overlay reserved for dark scenes — applied via class, not global */
+  .grain-overlay::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>");
+  }
+}
+
+@layer components {
+  /* Editorial display headline — used across all scenes */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 300;
+    letter-spacing: -0.015em;
+    line-height: 1.0;
+  }
+
+  /* Page-margin captions (service times, dates, small annotations) */
+  .caption {
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* Scripture italic — sparing use only */
+  .scripture {
+    font-family: var(--font-scripture);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  /* Gilt CTA — primary action button */
+  .cta-gilt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    background-color: var(--gilt);
+    border: none;
+    cursor: pointer;
+    transition: background-color 220ms var(--ease-gilt), transform 220ms var(--ease-gilt);
+  }
+  .cta-gilt:hover {
+    background-color: var(--gilt-deep);
+    transform: translateY(-1px);
+  }
+  .cta-gilt:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 4px;
+  }
+}
