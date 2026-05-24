@@ -25,6 +25,7 @@ import { Footer } from '@/components/layout/Footer';
 import { SceneController } from '@/components/three/SceneController';
 import { SoundDirector } from '@/components/three/SoundDirector';
 import { Loader } from '@/components/ui/Loader';
+import { DevHud } from '@/components/ui/DevHud';
 
 import { loadCurrentScripture } from '@/lib/scripture';
 import { fetchUpcomingEvents } from '@/lib/planningCenter';
@@ -62,6 +63,7 @@ export default async function HomePage() {
   return (
     <SceneController>
       <Loader />
+      <DevHud />
       <BibleWorld
         scriptureText={scripture.text}
         scriptureRef={scripture.ref}

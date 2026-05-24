@@ -36,10 +36,12 @@ interface ScriptureTypeProps {
   gildRange?: [number, number];
 }
 
-// Newsreader from Google Fonts — same family next/font is serving for HTML.
-// Troika downloads + caches the woff/ttf for use inside the canvas.
-const NEWSREADER_URL =
-  'https://fonts.gstatic.com/s/newsreader/v22/cY9qfjOCX1hbuyalUrK49dLac06G1ZGsZBtoBCzBDXXD9JVF438w.woff2';
+// No explicit font URL — drei <Text> uses its bundled default font (Roboto)
+// when `font` is omitted. Avoids CORS/404/version-drift risk of pinning a
+// Google Fonts CDN .woff2 URL. To upgrade to Newsreader inside Canvas:
+//   1. Drop a Newsreader-Regular.woff or .ttf file into /public/fonts/
+//   2. Set the `font` prop below to '/fonts/Newsreader-Regular.woff'
+// Same-origin local font, no CORS, no drift.
 
 export function ScriptureType({
   text,
@@ -145,7 +147,6 @@ export function ScriptureType({
   return (
     <group ref={groupRef} position={position}>
       <Text
-        font={NEWSREADER_URL}
         fontSize={0.20}
         maxWidth={2.2}
         textAlign="left"
@@ -160,7 +161,6 @@ export function ScriptureType({
       </Text>
 
       <Text
-        font={NEWSREADER_URL}
         fontSize={0.085}
         maxWidth={2.2}
         anchorX="left"

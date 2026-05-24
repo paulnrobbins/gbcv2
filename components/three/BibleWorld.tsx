@@ -54,81 +54,139 @@ export function BibleWorld({
   const prefersReduced = useReducedMotion();
 
   if (prefersReduced || tier === 'low') {
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.info('[BibleWorld] suppressed', { tier, prefersReduced });
+    }
     return null;
   }
 
+  if (process.env.NODE_ENV === 'development') {
+    // eslint-disable-next-line no-console
+    console.info('[BibleWorld] rendering', { tier, dpr: profile.dpr, postFX: profile.postFX });
+  }
+
   return (
-    <WorldErrorBoundary fallback={null}>
+    <WorldErrorBoundary
+      fallback={null}
+      onError={(err) => {
+        if (process.env.NODE_ENV === 'development') {
+          // eslint-disable-next-line no-console
+          console.error('[BibleWorld] outer boundary caught — Canvas/WebGL failure', err);
+        }
+      }}
+    >
       <div
         aria-hidden
         className="fixed inset-0 pointer-events-none"
         style={{ zIndex: 'var(--z-canvas, 0)' }}
       >
         <Canvas
-          dpr={profile.dpr}
-          shadows={profile.shadows}
-          camera={{ position: [0, 1.6, 5], fov: 38, near: 0.1, far: 100 }}
-          gl={{
-            toneMapping: TONE_MAPPING,
-            toneMappingExposure: TONE_MAPPING_EXPOSURE,
-            outputColorSpace: OUTPUT_COLOR_SPACE,
-            antialias: profile.postFX,
-            powerPreference: 'high-performance',
-          }}
-        >
+        dpr={profile.dpr}
+        shadows={profile.shadows}
+        camera={{ position: [0, 1.6, 5], fov: 38, near: 0.1, far: 100 }}
+        gl={{
+          toneMapping: TONE_MAPPING,
+          toneMappingExposure: TONE_MAPPING_EXPOSURE,
+          outputColorSpace: OUTPUT_COLOR_SPACE,
+          antialias: profile.postFX,
+          powerPreference: 'high-performance',
+        }}
+        onCreated={() => {
+          if (process.env.NODE_ENV === 'development') {
+            // eslint-disable-next-line no-console
+            console.info('[BibleWorld] canvas created');
+          }
+        }}
+      >
+        {/* Every scene element gets its OWN error boundary so a single failure
+            (missing asset, shader compile error, font fetch CORS) can never
+            blank the whole world. Each branch can independently disappear. */}
+
+        <WorldErrorBoundary fallback={null}>
+          <CameraRig />
+        </WorldErrorBoundary>
+
+        <WorldErrorBoundary fallback={null}>
           <Suspense fallback={null}>
-            <CameraRig />
             <StainedGlassLight />
-            <Bible />
-            <ScriptureType text={scriptureText} reference={scriptureRef} />
-
-            {/* Scene 4 — family photo billboards positioned above the page,
-                varying depths so camera dolly creates parallax */}
-            <WorldErrorBoundary fallback={null}>
-              <Suspense fallback={null}>
-                {familyPhotos[0] && (
-                  <PhotoBillboard
-                    src={familyPhotos[0].src}
-                    position={[-2.1, 1.7, 0.4]}
-                    size={[1.4, 1.75]}
-                    tilt={0.08}
-                    visibleRange={[0.40, 0.56]}
-                    seed={1.1}
-                  />
-                )}
-                {familyPhotos[1] && (
-                  <PhotoBillboard
-                    src={familyPhotos[1].src}
-                    position={[0, 2.0, 0.2]}
-                    size={[1.5, 1.85]}
-                    tilt={-0.04}
-                    visibleRange={[0.42, 0.58]}
-                    seed={2.3}
-                  />
-                )}
-                {familyPhotos[2] && (
-                  <PhotoBillboard
-                    src={familyPhotos[2].src}
-                    position={[2.1, 1.7, 0.4]}
-                    size={[1.4, 1.75]}
-                    tilt={-0.06}
-                    visibleRange={[0.44, 0.60]}
-                    seed={3.5}
-                  />
-                )}
-              </Suspense>
-            </WorldErrorBoundary>
-
-            {/* Scene 5 — event ribbons hanging from the page edge */}
-            <BookmarkRibbonField events={events} />
-
-            {/* Scene 6 — slow-rotating globe with missionary pin lights */}
-            <GlobeMap missionaries={missionaries} />
-
-            <DustMotes />
-            <PostFX />
           </Suspense>
-        </Canvas>
+        </WorldErrorBoundary>
+
+        <WorldErrorBoundary fallback={null}>
+          <Suspense fallback={null}>
+            <Bible />
+          </Suspense>
+        </WorldErrorBoundary>
+
+        <WorldErrorBoundary fallback={null}>
+          <Suspense fallback={null}>
+            <ScriptureType text={scriptureText} reference={scriptureRef} />
+          </Suspense>
+        </WorldErrorBoundary>
+
+        {/* Scene 4 — family photo billboards */}
+        {familyPhotos[0] && (
+          <WorldErrorBoundary fallback={null}>
+            <Suspense fallback={null}>
+              <PhotoBillboard
+                src={familyPhotos[0].src}
+                position={[-2.1, 1.7, 0.4]}
+                size={[1.4, 1.75]}
+                tilt={0.08}
+                visibleRange={[0.40, 0.56]}
+                seed={1.1}
+              />
+            </Suspense>
+          </WorldErrorBoundary>
+        )}
+        {familyPhotos[1] && (
+          <WorldErrorBoundary fallback={null}>
+            <Suspense fallback={null}>
+              <PhotoBillboard
+                src={familyPhotos[1].src}
+                position={[0, 2.0, 0.2]}
+                size={[1.5, 1.85]}
+                tilt={-0.04}
+                visibleRange={[0.42, 0.58]}
+                seed={2.3}
+              />
+            </Suspense>
+          </WorldErrorBoundary>
+        )}
+        {familyPhotos[2] && (
+          <WorldErrorBoundary fallback={null}>
+            <Suspense fallback={null}>
+              <PhotoBillboard
+                src={familyPhotos[2].src}
+                position={[2.1, 1.7, 0.4]}
+                size={[1.4, 1.75]}
+                tilt={-0.06}
+                visibleRange={[0.44, 0.60]}
+                seed={3.5}
+              />
+            </Suspense>
+          </WorldErrorBoundary>
+        )}
+
+        {/* Scene 5 — event ribbons */}
+        <WorldErrorBoundary fallback={null}>
+          <BookmarkRibbonField events={events} />
+        </WorldErrorBoundary>
+
+        {/* Scene 6 — globe + pin lights */}
+        <WorldErrorBoundary fallback={null}>
+          <GlobeMap missionaries={missionaries} />
+        </WorldErrorBoundary>
+
+        <WorldErrorBoundary fallback={null}>
+          <DustMotes />
+        </WorldErrorBoundary>
+
+        <WorldErrorBoundary fallback={null}>
+          <PostFX />
+        </WorldErrorBoundary>
+      </Canvas>
       </div>
     </WorldErrorBoundary>
   );
