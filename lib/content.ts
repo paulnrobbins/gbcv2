@@ -1,11 +1,16 @@
 /*
- * Markdown content loader.
+ * Markdown content loader — frontmatter + body for any future .md/.mdx files.
  *
- * Phase 2 stub — full MDX rendering wires up in Phase 4b/4c when subpages
- * pull from /content/pages, /content/ministries, /content/missionaries.
+ * Current build doesn't use these helpers (the v2 routes load typed data
+ * directly from `content/beliefs.ts`, `content/ministries/ministries.ts`,
+ * `content/missionaries/missionaries.ts`, `content/grace-groups/grace-groups.ts`,
+ * and `content/staff.ts` — TypeScript editing gives autocomplete + type
+ * checking when adding entries). These helpers stay so Paul can drop a
+ * `.md` file into `content/pages/` later and pick it up without rewiring.
  *
- * Pattern: server-side gray-matter parse + next-mdx-remote serialize.
- * Pages call `loadPage('beliefs')` and get back { frontmatter, mdxSource }.
+ * For full MDX rendering, install a current/non-vulnerable MDX renderer
+ * (next-mdx-remote v6+, or @next/mdx, or @mdx-js/react) at that point —
+ * we deliberately don't ship one preemptively.
  */
 
 import fs from 'node:fs/promises';

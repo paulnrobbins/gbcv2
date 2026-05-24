@@ -23,7 +23,6 @@
     "howler": "2.2.4",
     "ical.js": "2.1.0",
     "gray-matter": "4.0.3",
-    "next-mdx-remote": "5.0.0",
     "clsx": "2.1.1",
     "tailwind-merge": "2.5.4"
   },
